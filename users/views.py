@@ -4,12 +4,14 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import EmailTokenObtainPairSerializer, UserRegistrationSerializer
+from .serializers import EmailLoginSerializer, UserRegistrationSerializer
 from django.conf import settings
 from django.core.mail import send_mail
 from .models import CustomUser
 from .utils import generate_verification_token, verify_verification_token
 from django.core.signing import SignatureExpired, BadSignature
+from .constants import EMAIL_VERIFICATION_SUBJECT, EMAIL_VERIFICATION_MESSAGE
+
 
 
 def login_view(request):
@@ -26,7 +28,7 @@ class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
-        serializer = EmailTokenObtainPairSerializer(data=request.data)
+        serializer = EmailLoginSerializer(data=request.data)
         
         try:
             serializer.is_valid(raise_exception=True)
@@ -56,23 +58,11 @@ class RegisterAPIView(APIView):
             verification_url = f"{settings.FRONTEND_URL}/verify-email/{token}/"            
             try:
                 send_mail(
-                    subject='Verify Your Email - Edulance',
-                    message=f'''
-Hello {user.username},
-
-Thank you for registering with Edulance!
-
-Please verify your email address by clicking the link below:
-
-{verification_url}
-
-This link will expire in 24 hours.
-
-If you didn't create an account, please ignore this email.
-
-Best regards,
-Edulance Team
-                    ''',
+                    subject=EMAIL_VERIFICATION_SUBJECT,
+                    message=EMAIL_VERIFICATION_MESSAGE.format(
+                        username=user.username,
+                        verification_url=verification_url
+                    ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
                     fail_silently=False,
@@ -86,7 +76,9 @@ Edulance Team
             except Exception as e:
                 error_detail = str(e)
                 user.delete()
-                return Response({"error": f"Failed to send verification email: {error_detail}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({
+                    "error": f"Failed to send verification email: {error_detail}"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

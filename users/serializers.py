@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import CustomUser
 from rest_framework_simplejwt.tokens import RefreshToken
 
-class EmailTokenObtainPairSerializer(serializers.Serializer):
+class EmailLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
     
