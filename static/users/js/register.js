@@ -16,7 +16,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     submitBtn.textContent = 'Registering...';
     
     try {
-        const response = await fetch('/users/api/register/', {
+        const response = await fetch('/api/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         
         if (response.ok) {
             alert(data.message || 'Registration successful! Please check your email to verify your account.');
-            window.location.href = '/users/login/';
+            window.location.href = '/login/';
         } else {
             let errorMessage = 'Registration failed:\n';
             if (typeof data === 'object') {

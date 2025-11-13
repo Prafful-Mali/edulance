@@ -56,7 +56,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
     submitBtn.textContent = 'Logging in...';
     
     try {
-        const response = await fetch('/users/api/token/', {
+        const response = await fetch('/api/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,6 +73,10 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+            
             const alertDiv = document.getElementById('messageAlert');
             const messageText = document.getElementById('messageText');
             alertDiv.className = 'alert alert-success alert-dismissible fade show';
@@ -80,7 +84,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             alertDiv.classList.remove('d-none');
             
             setTimeout(() => {
-                window.location.href = '/users/dashboard/';
+                window.location.href = '/dashboard/';
             }, 1000);
             
         } else {
