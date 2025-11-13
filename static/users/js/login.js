@@ -1,3 +1,50 @@
+window.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    
+    if (message) {
+        const alertDiv = document.getElementById('messageAlert');
+        const messageText = document.getElementById('messageText');
+        
+        let alertClass = 'alert-info';
+        let messageContent = '';
+        
+        switch(message) {
+            case 'verified':
+                alertClass = 'alert-success';
+                messageContent = 'Email verified successfully! You can now login.';
+                break;
+            case 'already_verified':
+                alertClass = 'alert-info';
+                messageContent = 'Your email is already verified. Please login.';
+                break;
+            case 'expired':
+                alertClass = 'alert-warning';
+                messageContent = 'Verification link has expired. Please request a new one.';
+                break;
+            case 'invalid':
+                alertClass = 'alert-danger';
+                messageContent = 'Invalid verification link.';
+                break;
+            case 'not_found':
+                alertClass = 'alert-danger';
+                messageContent = 'User not found.';
+                break;
+            case 'error':
+                alertClass = 'alert-danger';
+                messageContent = 'An error occurred during verification.';
+                break;
+            default:
+                return;
+        }
+        
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+        messageText.textContent = messageContent;
+        alertDiv.classList.remove('d-none');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+
 document.querySelector('form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -35,6 +82,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             setTimeout(() => {
                 window.location.href = '/users/dashboard/';
             }, 1000);
+            
         } else {
             const alertDiv = document.getElementById('messageAlert');
             const messageText = document.getElementById('messageText');
