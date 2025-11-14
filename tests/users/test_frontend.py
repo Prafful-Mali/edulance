@@ -24,7 +24,6 @@ class TestLoginPage:
         url = reverse("users:login")
         response = client.get(url)
 
-        # JS file path in template: static/users/js/login.js
         assert b"users/js/login.js" in response.content
 
     def test_login_page_contains_form_fields(self, client):
@@ -53,7 +52,6 @@ class TestLoginPage:
 
         html = response.content.decode()
 
-        # The JS will show alert, but we only test the message text exists
         assert "Email verified" in html or "messageAlert" in html
 
     def test_message_param_invalid(self, client):
