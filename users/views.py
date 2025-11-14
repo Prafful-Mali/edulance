@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import EmailLoginSerializer, UserRegistrationSerializer
+from .serializers import EmailLoginSerializer, UserRegistrationSerializer, UserProfileSerializer, PasswordChangeSerializer
 from django.conf import settings
+from rest_framework.decorators import action
 from django.core.mail import send_mail
 from .models import CustomUser
 from .utils import generate_verification_token, verify_verification_token
@@ -160,3 +161,69 @@ class LogoutAPIView(APIView):
                 {"error": "Invalid token"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return CustomUser.objects.all()
+        return CustomUser.objects.filter(id=user.id)
+    
+    def get_permissions(self):
+        if self.action in ['list', 'destroy']:
+            return [IsAuthenticated()]
+        return [IsAuthenticated()]
+    
+    def list(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            return Response(
+                {"error": "Only admins can list all users"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().list(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if request.user.role != 'admin' and request.user.id != instance.id:
+            return Response(
+                {"error": "You can only delete your own account"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if request.user.role != 'admin' and request.user.id != instance.id:
+            return Response(
+                {"error": "You can only update your own account"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+    
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        """Get current user profile"""
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def change_password(self, request):
+        serializer = PasswordChangeSerializer(
+            data=request.data, 
+            context={'request': request}
+        )
+        
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            
+            return Response({
+                "message": "Password changed successfully"
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

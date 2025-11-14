@@ -61,3 +61,29 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             is_email_verified=False
         )
         return user
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'role', 'bio', 'is_email_verified', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'username', 'email', 'role', 'is_email_verified', 'created_at', 'updated_at']
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True, min_length=6)
+    new_password_confirm = serializers.CharField(write_only=True, required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect")
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['new_password_confirm']:
+            raise serializers.ValidationError(
+                {"new_password": "New passwords don't match"}
+            )
+        return data
