@@ -61,4 +61,3 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             is_email_verified=False
         )
         return user
-    
