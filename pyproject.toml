@@ -10,6 +10,7 @@ dependencies = [
     "djangorestframework-simplejwt>=5.5.1",
     "psycopg2-binary>=2.9.11",
     "pytest>=9.0.0",
+    "pytest-django>=4.11.1",
     "python-dotenv>=1.2.1",
 ]
 
