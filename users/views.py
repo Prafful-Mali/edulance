@@ -116,20 +116,21 @@ class CustomTokenView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        auth_header = request.headers.get("Authorization")
+        refresh_token = request.data.get("refresh")
 
-        if not auth_header or not auth_header.startswith("Bearer "):
+        if not refresh_token:
             return Response(
-                {"error": "Refresh token missing in Authorization header"},
+                {"error": "Refresh token required in request body"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        refresh_token = auth_header.split(" ")[1]
-
         try:
             refresh = RefreshToken(refresh_token)
-            new_refresh = str(refresh)
             new_access = str(refresh.access_token)
+            
+            refresh.set_jti()
+            refresh.set_exp()
+            new_refresh = str(refresh)
 
             return Response({
                 "access": new_access,
@@ -137,31 +138,39 @@ class CustomTokenView(APIView):
                 "message": "Token refreshed successfully"
             }, status=status.HTTP_200_OK)
 
-        except Exception:
+        except Exception as e:
             return Response(
                 {"error": "Invalid or expired refresh token"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
-
+        
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
         try:
             refresh_token = request.data.get("refresh")
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
+            
+            if not refresh_token:
+                return Response(
+                    {"error": "Refresh token is required"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            
             return Response(
                 {"message": "Logout successful"}, 
                 status=status.HTTP_200_OK
             )
+            
         except Exception as e:
             return Response(
-                {"error": "Invalid token"}, 
+                {"error": "Invalid or expired token"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+                
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileSerializer
