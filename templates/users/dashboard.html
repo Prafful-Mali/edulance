@@ -1,3 +1,169 @@
-<h1>
-    dashboard
-</h1>
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}Dashboard - Edulance{% endblock %}
+
+{% block dashboard_active %}active{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="hero">
+        <h2>Welcome to Edulance!</h2>
+        <p>Collaborate, innovate, and grow with peers through projects and hackathons.</p>
+    </div>
+</div>
+
+<div class="container mb-3">
+    <div id="alertContainer"></div>
+</div>
+
+<div class="container mb-5">
+    <div class="row text-center g-4">
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">What is Edulance?</h5>
+                    <p class="card-text text-muted">
+                        A collaboration platform connecting students and developers to form project or hackathon teams effortlessly.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Why Collaborate?</h5>
+                    <p class="card-text text-muted">
+                        Learn faster and gain hands-on experience by building together with diverse, like-minded peers.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">How It Works</h5>
+                    <p class="card-text text-muted">
+                        Post your project idea or join open teams – connect, contribute, and grow as a community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h5 class="mb-3 text-center">Quick Actions</h5>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6">
+            <div class="card quick-card h-100 text-center p-4 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 fw-semibold">Profile Settings</h5>
+                    <p class="card-text text-muted mb-4">Update your profile information and preferences.</p>
+                    <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        View Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card quick-card h-100 text-center p-4 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 fw-semibold">Password</h5>
+                    <p class="card-text text-muted mb-4">Manage your password and privacy settings securely.</p>
+                    <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#securityModal">
+                        Security Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="profile-fab" data-bs-toggle="modal" data-bs-target="#profileModal">
+    👤
+</button>
+
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-body">
+                <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3">
+                    <span id="userInitial">U</span>
+                </div>
+                <h5 id="userName">John Doe</h5>
+                <p class="text-muted" id="userEmail">john.doe@example.com</p>
+                <span class="badge bg-primary" id="userRole">Student</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Profile Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" value="JohnDoe" disabled/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail" value="john.doe@example.com" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-control" id="editUserBio" rows="3">Passionate developer interested in AI and web technologies.</textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary-custom btn-custom">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="securityModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Password Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Old Password</label>
+                        <input type="password" class="form-control" id="oldPassword" placeholder="Enter old password" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" placeholder="Enter new password" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Re-enter New Password</label>
+                        <input type="password" class="form-control" id="newPasswordConfirm" placeholder="Re-enter new password" required />
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary-custom btn-custom">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/js/dashboard.js' %}"></script>
+{% endblock %}

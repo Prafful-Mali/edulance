@@ -206,7 +206,6 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def me(self, request):
-        """Get current user profile"""
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
