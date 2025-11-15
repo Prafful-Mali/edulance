@@ -26,12 +26,12 @@ async function loadUserProfile() {
       currentUserId = data.id;
       
       document.getElementById('userName').textContent = data.username || 'User';
-      document.getElementById('userEmailCard').textContent = data.email || '';
+      document.getElementById('userEmail').textContent = data.email || '';
       document.getElementById('userRole').textContent = data.role || 'User';
       
       document.getElementById('editUsername').value = data.username || '';
-      document.getElementById('editEmail').value = data.email || '';
-      document.getElementById('editBio').value = data.bio || '';
+      document.getElementById('editUserEmail').value = data.email || '';
+      document.getElementById('editUserBio').value = data.bio || '';
       
       const initial = data.username ? data.username.charAt(0).toUpperCase() : 'U';
       document.getElementById('userInitial').textContent = initial;
@@ -47,7 +47,7 @@ async function loadUserProfile() {
 document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   
-  const bio = document.getElementById('editBio').value;
+  const bio = document.getElementById('editUserBio').value;
   
   try {
     const response = await authenticatedFetch(`/api/users/${currentUserId}/`, {
