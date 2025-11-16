@@ -23,8 +23,6 @@ class PostSerializer(serializers.ModelSerializer):
     applications_count = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     has_applied = serializers.SerializerMethodField()
-    can_edit = serializers.SerializerMethodField()
-    can_delete = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
@@ -32,7 +30,7 @@ class PostSerializer(serializers.ModelSerializer):
             'id', 'user', 'title', 'slug', 'description', 'project_type',
             'people_required', 'last_date', 'event_start_date', 'event_last_date',
             'is_active', 'skills', 'skill_ids', 'applications_count',
-            'is_owner', 'has_applied', 'can_edit', 'can_delete', 'created_at', 'updated_at'
+            'is_owner', 'has_applied', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'slug', 'user', 'created_at', 'updated_at']
     
@@ -52,18 +50,6 @@ class PostSerializer(serializers.ModelSerializer):
                 applicant=request.user,
                 deleted_at__isnull=True
             ).exists()
-        return False
-    
-    def get_can_edit(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.user.id == request.user.id or request.user.role == 'admin'
-        return False
-    
-    def get_can_delete(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.user.id == request.user.id or request.user.role == 'admin'
         return False
     
     def validate_skill_ids(self, value):
