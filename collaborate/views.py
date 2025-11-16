@@ -6,7 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from .models import Skill, Post, Application
 from .serializers import SkillSerializer, PostSerializer, ApplicationSerializer
-
+from users.models import CustomUser
+from users.serializers import UserProfileSerializer
+from rest_framework import serializers
 
 def collaborate_view(request):
     return render(request, 'collaborate/collaborate.html')
@@ -39,11 +41,13 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.order_by('-created_at')
     
     def perform_create(self, serializer):
+        if self.request.user.role == 'admin':
+            raise serializers.ValidationError("Admins cannot create posts")
         serializer.save(user=self.request.user)
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.user != request.user and request.user.role != 'admin':
+        if instance.user != request.user:
             return Response(
                 {"error": "You can only update your own posts"},
                 status=status.HTTP_403_FORBIDDEN
@@ -52,7 +56,7 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.user != request.user and request.user.role != 'admin':
+        if instance.user != request.user:
             return Response(
                 {"error": "You can only delete your own posts"},
                 status=status.HTTP_403_FORBIDDEN
@@ -71,7 +75,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'post', 'delete']
+    http_method_names = ['get', 'post', 'delete']  
     
     def get_queryset(self):
         queryset = Application.objects.filter(
@@ -110,6 +114,78 @@ class ApplicationViewSet(viewsets.ModelViewSet):
                 {"error": "You can only delete your own applications"},
                 status=status.HTTP_403_FORBIDDEN
             )
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+def admin_panel_view(request):
+    return render(request, 'admin/admin_panel.html')
+
+
+class AdminUserViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        if self.request.user.role != 'admin':
+            return CustomUser.objects.none()
+        return CustomUser.objects.filter(deleted_at__isnull=True).order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            return Response(
+                {"error": "Only admins can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().list(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            return Response(
+                {"error": "Only admins can delete users"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        instance = self.get_object()
+        
+        if instance.id == request.user.id:
+            return Response(
+                {"error": "You cannot delete your own account"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminPostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'slug'
+    
+    def get_queryset(self):
+        if self.request.user.role != 'admin':
+            return Post.objects.none()
+        return Post.objects.filter(deleted_at__isnull=True).select_related('user').prefetch_related('skills').order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            return Response(
+                {"error": "Only admins can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().list(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            return Response(
+                {"error": "Only admins can delete posts"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        instance = self.get_object()
         instance.deleted_at = timezone.now()
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
