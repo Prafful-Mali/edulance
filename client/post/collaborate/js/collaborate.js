@@ -53,7 +53,7 @@ function formatDate(dateString) {
 }
 
 function createPostCard(post, isOwner = false) {
-    const skills = post.skills.map(s => `<span class="badge bg-secondary me-1">${s.name}</span>`).join('');
+    const skills = post.skills.map(skill => `<span class="badge bg-secondary me-1">${skill.name}</span>`).join('');     
     const projectTypeBadge = post.project_type === 'hackathon'
         ? '<span class="badge bg-warning text-dark">Hackathon</span>'
         : '<span class="badge bg-info text-dark">Group Project</span>';
@@ -165,9 +165,9 @@ async function createPost() {
 
     const selectedSkills = skillsSelectInstance.getValue();
     
-    const skillIds = selectedSkills.filter(s => allSkills.find(skill => skill.id === s));
+    const skillIds = selectedSkills.filter(skillId => allSkills.find(skill => skill.id === skillId));       
     
-    const newSkills = selectedSkills.filter(s => !allSkills.find(skill => skill.id === s));
+    const newSkills = selectedSkills.filter(skillId => !allSkills.find(skill => skill.id === skillId));         
     if (newSkills.length > 0) {
         showError('Please select only existing skills from the list. Creating new skills is not allowed.');
         return;
@@ -229,7 +229,7 @@ async function deletePost(slug) {
 }
 
 async function openEditModal(slug) {
-    const post = myPosts.find(p => p.slug === slug);
+    const post = myPosts.find(post => post.slug === slug);
     if (!post) {
         console.error('Post not found with slug:', slug);
         return;
@@ -252,7 +252,7 @@ async function openEditModal(slug) {
         const opt = document.createElement('option');
         opt.value = skill.id;
         opt.text = skill.name;
-        if (post.skills.some(s => s.id === skill.id)) {
+        if (post.skills.some(skillObj => skillObj.id === skill.id)) { 
             opt.selected = true;
         }
         select.appendChild(opt);
@@ -280,7 +280,7 @@ async function saveEdit() {
     const slug = document.getElementById('editPostId').value;
     const selectedSkills = editSkillsSelectInstance.getValue();
     
-    const skillIds = selectedSkills.filter(s => allSkills.some(skill => skill.id === s));
+    const skillIds = selectedSkills.filter(skillId => allSkills.some(skill => skill.id === skillId));   ////
 
     const postData = {
         title: document.getElementById('editPostTitle').value,
@@ -331,7 +331,7 @@ function attachButtonHandlers() {
 }
 
 function renderPosts() {
-    const otherPosts = allPosts.filter(p => !p.is_owner);
+    const otherPosts = allPosts.filter(post => !post.is_owner);      
     if (otherPosts.length === 0) {
         elements.postsContainer.innerHTML = '<p class="text-muted text-center col-12">No posts available.</p>';
         return;
