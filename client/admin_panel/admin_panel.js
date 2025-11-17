@@ -1,6 +1,13 @@
+import { API } from './apiEndpoints.js';
+
 if (!requireAuth()) {
     throw new Error("Authentication required");
 }
+
+const UserRole = {
+    ADMIN: 'admin',
+    USER: 'user'
+};
 
 let allUsers = [];
 let allPosts = [];
@@ -9,11 +16,11 @@ let selectedPostSlug = null;
 
 async function checkAdminRole() {
     try {
-        const response = await authenticatedFetch('/api/users/me/');
+        const response = await authenticatedFetch(API.USERS.ME);
         if (response.ok) {
             const user = await response.json();
-            console.log('Current user:', user);
-            if (user.role !== 'admin') {
+
+            if (user.role !== UserRole.ADMIN) {
                 alert('Access denied. Admin privileges required.');
                 window.location.href = '/dashboard/';
                 return false;
@@ -33,13 +40,10 @@ async function checkAdminRole() {
 
 async function fetchUsers() {
     try {
-        console.log('Fetching users from /api/admin/users/');
-        const response = await authenticatedFetch('/api/admin/users/');
-        console.log('Users response status:', response.status);
+        const response = await authenticatedFetch(API.USERS.LIST);
         
         if (response.ok) {
             allUsers = await response.json();
-            console.log('Users loaded:', allUsers);
             renderUsers();
             updateStats();
         } else {
@@ -55,13 +59,10 @@ async function fetchUsers() {
 
 async function fetchPosts() {
     try {
-        console.log('Fetching posts from /api/admin/posts/');
-        const response = await authenticatedFetch('/api/admin/posts/');
-        console.log('Posts response status:', response.status);
+        const response = await authenticatedFetch(API.POSTS.LIST);
         
         if (response.ok) {
             allPosts = await response.json();
-            console.log('Posts loaded:', allPosts);
             renderPosts();
             updateStats();
         } else {
@@ -99,7 +100,7 @@ function renderUsers() {
             <td>${escapeHtml(user.username)}</td>
             <td>${escapeHtml(user.email)}</td>
             <td>
-                <span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-primary'}">
+                <span class="badge ${user.role === UserRole.ADMIN ? 'bg-danger' : 'bg-primary'}">
                     ${escapeHtml(user.role)}
                 </span>
             </td>
@@ -173,7 +174,7 @@ async function deleteUser() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
     
     try {
-        const response = await authenticatedFetch(`/api/admin/users/${selectedUserId}/`, {
+        const response = await authenticatedFetch(API.USERS.DELETE(selectedUserId), {
             method: 'DELETE'
         });
         
@@ -203,7 +204,7 @@ async function deletePost() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
     
     try {
-        const response = await authenticatedFetch(`/api/admin/posts/${selectedPostSlug}/`, {
+        const response = await authenticatedFetch(API.POSTS.DELETE(selectedPostSlug), {
             method: 'DELETE'
         });
         

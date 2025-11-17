@@ -6,8 +6,7 @@
 {% block nav_admin %}active{% endblock %}
 
 {% block extra_css %}
-<style>
-</style>
+<link rel="stylesheet" href="{% static 'admin_panel/admin_panel.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -126,5 +125,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'admin_panel/admin_panel.js' %}"></script>
+<script type="module" src="{% static 'admin_panel/admin_panel.js' %}"></script>
 {% endblock %}
