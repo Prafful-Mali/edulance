@@ -157,8 +157,7 @@
     <script src="{% static 'base.js' %}"></script>
     
     <script>
-        if (!requireAuth()) {
-        }
+        requireAuth();
 
         const slug = '{{ slug }}';
         let currentUser = null;
