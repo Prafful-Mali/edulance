@@ -16,7 +16,7 @@ urlpatterns = [
     path("api/login/", LoginAPIView.as_view(), name="api_login"),
     path("api/register/", RegisterAPIView.as_view(), name="api_register"),
     path("api/logout/", LogoutAPIView.as_view(), name="api_logout"),
-    path("api/token", CustomTokenView.as_view(), name="api_token"),
+    path("api/token/", CustomTokenView.as_view(), name="api_token"),
     path("api/", include(router.urls)),
 
 ]
