@@ -25,16 +25,22 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto" id="navbarMenu">
           <li class="nav-item">
-            <a class="nav-link {% block dashboard_active %}{% endblock %}" href="/dashboard/">
+            <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="/dashboard/">
               <i class="bi bi-speedometer2 me-1"></i>Dashboard
             </a>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link {% block collaborate_active %}{% endblock %}" href="/collaborate/">
+          <li class="nav-item" id="collaborateNav">
+            <a class="nav-link {% block nav_collaborate %}{% endblock %}" href="/collaborate/">
               <i class="bi bi-people-fill me-1"></i>Collaborate
+            </a>
+          </li>
+
+          <li class="nav-item d-none" id="adminPanelNav">
+            <a class="nav-link {% block nav_admin %}{% endblock %}" href="/admin-panel/">
+              <i class="bi bi-shield-lock-fill me-1"></i>Admin Panel
             </a>
           </li>
 
@@ -59,6 +65,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'base.js' %}"></script>
+
+  <script>
+    async function setupNavigation() {
+      try {
+        const response = await authenticatedFetch('/api/users/me/');
+        if (response.ok) {
+          const user = await response.json();
+          
+          if (user.role === 'admin') {
+            document.getElementById('collaborateNav').classList.add('d-none');
+            document.getElementById('adminPanelNav').classList.remove('d-none');
+          } else {
+            document.getElementById('collaborateNav').classList.remove('d-none');
+            document.getElementById('adminPanelNav').classList.add('d-none');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user role:', error);
+      }
+    }
+
+    if (isAuthenticated()) {
+      setupNavigation();
+    }
+  </script>
 
   {% block extra_js %}{% endblock %}
 </body>
