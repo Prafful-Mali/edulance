@@ -8,7 +8,7 @@ from .models import Skill, Post, Application
 from .serializers import SkillSerializer, PostSerializer, ApplicationSerializer
 from users.models import CustomUser
 from users.serializers import UserProfileSerializer
-from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 def collaborate_view(request):
     return render(request, 'collaborate/collaborate.html')
@@ -42,7 +42,10 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         if self.request.user.role == 'admin':
-            raise serializers.ValidationError("Admins cannot create posts")
+            return Response(
+                {"error": "Admins cannot create posts"},
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializer.save(user=self.request.user)
     
     def update(self, request, *args, **kwargs):

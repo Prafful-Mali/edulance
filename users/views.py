@@ -31,10 +31,13 @@ class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = EmailLoginSerializer(data=request.data)
         
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+        if not serializer.is_valid():
+            errors = serializer.errors
+            error_message = list(errors.values())[0][0]
+            return Response(
+                {"error": str(error_message)}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         
         tokens = serializer.validated_data
         access_token = tokens.get("access")
@@ -45,7 +48,6 @@ class LoginAPIView(APIView):
             "access": access_token,
             "refresh": refresh_token
         }, status=status.HTTP_200_OK)
-
 
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]
@@ -168,7 +170,7 @@ class LogoutAPIView(APIView):
         except Exception as e:
             return Response(
                 {"error": "Invalid or expired token"}, 
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_401_UNAUTHORIZED
             )
                 
 class UserViewSet(viewsets.ModelViewSet):
