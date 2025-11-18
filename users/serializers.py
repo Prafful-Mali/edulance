@@ -15,6 +15,9 @@ class EmailLoginSerializer(serializers.Serializer):
         except CustomUser.DoesNotExist:
             raise serializers.ValidationError('Invalid credentials')
         
+        if user.deleted_at is not None:
+            raise serializers.ValidationError('Your account was deleted by admin')
+        
         if not user.is_email_verified:
             raise serializers.ValidationError('Please verify your email before logging in')
         
@@ -30,7 +33,6 @@ class EmailLoginSerializer(serializers.Serializer):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
