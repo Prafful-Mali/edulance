@@ -18,8 +18,8 @@ class Skill(models.Model):
 
 class Post(models.Model):
     PROJECT_TYPE_CHOICES = [
-        ('hackathon', 'Hackathon'),
-        ('group_project', 'Group Project'),
+        ("hackathon", "Hackathon"),
+        ("group_project", "Group Project"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -30,10 +30,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=250, unique=True)
     description = models.TextField()
     project_type = models.CharField(
-        max_length=20,
-        choices=PROJECT_TYPE_CHOICES,
-        blank=True,
-        null=True
+        max_length=20, choices=PROJECT_TYPE_CHOICES, blank=True, null=True
     )
     people_required = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     last_date = models.DateTimeField()
@@ -53,7 +50,9 @@ class Post(models.Model):
 class PostSkill(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_skills")
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name="skill_posts")
+    skill = models.ForeignKey(
+        Skill, on_delete=models.CASCADE, related_name="skill_posts"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -71,7 +70,9 @@ class Application(models.Model):
     applicant = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="applications"
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="applications")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="applications"
+    )
     message = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -197,8 +197,16 @@ async function createPost() {
             skillsSelectInstance.clear();
             await loadAllData();
         } else {
-            const error = await response.json();
-            showError(error.detail || error.skill_ids?.[0] || 'Failed to create post');
+            let parsed = null;
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                parsed = await response.json();
+            }
+            showError(
+                parsed?.detail ||
+                parsed?.skill_ids?.[0] ||
+                parsed?.event_last_date?.[0] ||
+                "Failed to create post"
+            );
         }
     } catch (error) {
         console.error('Error creating post:', error);
@@ -280,7 +288,7 @@ async function saveEdit() {
     const slug = document.getElementById('editPostId').value;
     const selectedSkills = editSkillsSelectInstance.getValue();
     
-    const skillIds = selectedSkills.filter(skillId => allSkills.some(skill => skill.id === skillId));   ////
+    const skillIds = selectedSkills.filter(skillId => allSkills.some(skill => skill.id === skillId));
 
     const postData = {
         title: document.getElementById('editPostTitle').value,

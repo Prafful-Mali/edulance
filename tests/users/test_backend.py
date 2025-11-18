@@ -18,7 +18,7 @@ def user():
         email="test@example.com",
         username="testuser",
         password="testpass123",
-        is_email_verified=True
+        is_email_verified=True,
     )
 
 
@@ -30,7 +30,7 @@ class TestAuthAPI:
             "email": "prafful@gkmit.co",
             "username": "newuser",
             "password": "newpassword123",
-            "password_confirm": "newpassword123"
+            "password_confirm": "newpassword123",
         }
 
         url = reverse("users:api_register")
@@ -57,7 +57,7 @@ class TestAuthAPI:
             "email": "fail@example.com",
             "username": "failuser",
             "password": "abc12345",
-            "password_confirm": "abc12345"
+            "password_confirm": "abc12345",
         }
 
         url = reverse("users:api_register")
@@ -94,7 +94,7 @@ class TestAuthAPI:
             email="nov@example.com",
             username="novUser",
             password="pass12345",
-            is_email_verified=False
+            is_email_verified=False,
         )
 
         payload = {"email": user.email, "password": "pass12345"}
@@ -109,7 +109,7 @@ class TestAuthAPI:
             email="v@example.com",
             username="verifyuser",
             password="pass0000",
-            is_email_verified=False
+            is_email_verified=False,
         )
 
         token = generate_verification_token(user)
