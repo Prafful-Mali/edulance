@@ -1,21 +1,22 @@
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 
+
 class EmailVerificationTokenGenerator:
-    def __init__(self, salt='email-verification'):
+    def __init__(self, salt="email-verification"):
         self.salt = salt
         self.signer = TimestampSigner(salt=self.salt)
-    
+
     def generate_token(self, user):
         value = f"{user.id}:{user.email}"
         return self.signer.sign(value)
-    
+
     def verify_token(self, token, max_age=86400):
         try:
             value = self.signer.unsign(token, max_age=max_age)
-            
-            user_id, email = value.split(':', 1)
+
+            user_id, email = value.split(":", 1)
             return user_id, email
-            
+
         except SignatureExpired:
             raise SignatureExpired("Verification link has expired")
         except BadSignature:

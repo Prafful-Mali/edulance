@@ -1,4 +1,3 @@
-
 EMAIL_VERIFICATION_SUBJECT = "Verify Your Email - Edulance"
 
 EMAIL_VERIFICATION_MESSAGE = """
