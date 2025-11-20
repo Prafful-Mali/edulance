@@ -8,7 +8,7 @@ class EmailLoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs.get("email")
+        email = attrs.get("email").lower()
         password = attrs.get("password")
 
         try:
@@ -58,7 +58,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         user = CustomUser.objects.create_user(
             username=validated_data["username"],
-            email=validated_data["email"],
+            email=validated_data["email"].lower(),
             password=password,
             role=validated_data.get("role", "user"),
             is_active=True,
@@ -104,7 +104,5 @@ class PasswordChangeSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["new_password"] != data["new_password_confirm"]:
-            raise serializers.ValidationError(
-                {"new_password": "New passwords don't match"}
-            )
+            raise serializers.ValidationError("New passwords don't match")
         return data

@@ -1,6 +1,4 @@
-if (!requireAuth()) {
-    throw new Error("Authentication required");
-}
+requireAuth();
 
 let allPosts = [];
 let myPosts = [];
@@ -202,10 +200,7 @@ async function createPost() {
                 parsed = await response.json();
             }
             showError(
-                parsed?.detail ||
-                parsed?.skill_ids?.[0] ||
-                parsed?.event_last_date?.[0] ||
-                "Failed to create post"
+                Object.values(parsed).flat()[0] || "Failed to create post"
             );
         }
     } catch (error) {

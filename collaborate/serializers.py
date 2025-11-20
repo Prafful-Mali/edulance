@@ -3,6 +3,7 @@ from .models import Skill, Post, PostSkill, Application
 from users.serializers import UserProfileSerializer
 from django.utils.text import slugify
 import uuid
+from django.utils import timezone
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -83,12 +84,22 @@ class PostSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         event_start = attrs.get("event_start_date")
         event_end = attrs.get("event_last_date")
+        last_date = attrs.get("last_date")
+
         if event_start and event_end:
             if event_start > event_end:
                 raise serializers.ValidationError(
-                    {
-                        "event_last_date": "End date must be greater than or equal to start date."
-                    }
+                    "End date must be greater than or equal to start date."
+                )
+        if last_date and event_start:
+            if last_date > event_start:
+                raise serializers.ValidationError(
+                    "Application Deadline must be earlier than or equal to event start date."
+                )
+        if last_date:
+            if last_date <= timezone.now():
+                raise serializers.ValidationError(
+                    "Application Deadline must be greater than today's date."
                 )
 
         return attrs
@@ -112,6 +123,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         skill_ids = validated_data.pop("skill_ids", None)
+
+        base_slug = slugify(validated_data["title"])
+        validated_data["slug"] = f"{base_slug}-{str(uuid.uuid4())[:8]}"
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -146,5 +160,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
         except Post.DoesNotExist:
             raise serializers.ValidationError({"post_id": "Post not found or inactive"})
 
+        today = timezone.now()
+
+        if post.last_date < today:
+            raise serializers.ValidationError(
+                {"error": "The last date to apply for this post has passed."}
+            )
         validated_data["post"] = post
         return Application.objects.create(**validated_data)
