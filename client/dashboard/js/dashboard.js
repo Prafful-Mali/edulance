@@ -99,7 +99,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', async f
       bootstrap.Modal.getInstance(document.getElementById('securityModal')).hide();
     } else {
       const error = await response.json();
-      const errorMsg = error.old_password?.[0] || error.new_password?.[0] || error.error || 'Failed to change password';
+      const errorMsg = Object.values(error).flat()[0]|| 'Failed to change password';
       showAlert(errorMsg, 'danger');
     }
   } catch (error) {
