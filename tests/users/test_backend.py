@@ -1,25 +1,9 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
 from rest_framework import status
+from unittest.mock import patch
 from users.models import CustomUser
 from users.utils import generate_verification_token
-from unittest.mock import patch
-
-
-@pytest.fixture
-def api_client():
-    return APIClient()
-
-
-@pytest.fixture
-def user():
-    return CustomUser.objects.create_user(
-        email="test@example.com",
-        username="testuser",
-        password="testpass123",
-        is_email_verified=True,
-    )
 
 
 @pytest.mark.django_db

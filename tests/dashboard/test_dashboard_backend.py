@@ -1,35 +1,7 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
 from rest_framework import status
 from users.models import CustomUser
-
-
-@pytest.fixture
-def api_client():
-    return APIClient()
-
-
-@pytest.fixture
-def user():
-    return CustomUser.objects.create_user(
-        email="test@example.com",
-        username="testuser",
-        password="testpass123",
-        is_email_verified=True,
-        role="user",
-    )
-
-
-@pytest.fixture
-def admin_user():
-    return CustomUser.objects.create_user(
-        email="admin@example.com",
-        username="adminuser",
-        password="adminpass123",
-        is_email_verified=True,
-        role="admin",
-    )
 
 
 @pytest.mark.django_db
@@ -55,6 +27,7 @@ class TestDashboardBackendAPI:
             "new_password": "newpass123456",
             "new_password_confirm": "newpass123456",
         }
+
         response = api_client.post(url, payload, format="json")
 
         assert response.status_code == status.HTTP_200_OK
@@ -72,6 +45,7 @@ class TestDashboardBackendAPI:
             "new_password": "newpass123456",
             "new_password_confirm": "newpass123456",
         }
+
         response = api_client.post(url, payload, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -86,6 +60,7 @@ class TestDashboardBackendAPI:
             "new_password": "newpass123456",
             "new_password_confirm": "differentpass",
         }
+
         response = api_client.post(url, payload, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
