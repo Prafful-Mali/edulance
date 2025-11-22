@@ -180,6 +180,7 @@ DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
 
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, "client/js", "serviceworker.js")
 
+
 # PWA Settings
 PWA_APP_NAME = "Edulance"
 PWA_APP_DESCRIPTION = "A collaborative platform for education and learning"
