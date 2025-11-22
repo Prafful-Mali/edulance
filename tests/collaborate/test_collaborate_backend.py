@@ -7,7 +7,6 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-
 @pytest.mark.django_db
 class TestSkillAPI:
 
