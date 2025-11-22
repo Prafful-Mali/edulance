@@ -199,7 +199,20 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.role == "admin":
             return CustomUser.objects.all()
         return CustomUser.objects.filter(id=user.id)
+    
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset()
 
+        if getattr(request.user, "role", None) != "admin":
+            obj = qs.first()   
+            if not obj:
+                return Response({}) 
+
+            serializer = self.get_serializer(obj, many=False)
+            return Response(serializer.data)
+
+        return super().list(request, *args, **kwargs)
+    
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if request.user.role != "admin" and request.user.id != instance.id:
@@ -209,10 +222,6 @@ class UserViewSet(viewsets.ModelViewSet):
             )
         return super().update(request, *args, **kwargs)
 
-    @action(detail=False, methods=["get"])
-    def me(self, request):
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
 
     @action(detail=False, methods=["post"])
     def change_password(self, request):
