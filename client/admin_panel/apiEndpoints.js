@@ -1,6 +1,6 @@
 export const API = Object.freeze({
     USERS: {
-        ME: '/api/users/me/',
+        ME: '/api/users/',
         LIST: '/api/admin/users/',
         DELETE: (userId) => `/api/admin/users/${userId}/`
     },
