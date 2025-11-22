@@ -19,7 +19,7 @@ function showAlert(message, type = 'success') {
 
 async function loadUserProfile() {
   try {
-    const response = await authenticatedFetch('/api/users/me/');
+    const response = await authenticatedFetch('/api/users/');
 
     if (response.ok) {
       const data = await response.json();
