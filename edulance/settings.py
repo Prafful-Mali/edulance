@@ -16,15 +16,22 @@ from dotenv import load_dotenv
 import environ
 
 load_dotenv()
-env = environ.Env(DEBUG=(bool, False))
+# env = environ.Env(DEBUG=(bool, False))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
