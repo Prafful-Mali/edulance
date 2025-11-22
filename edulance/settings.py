@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "users",
     "collaborate",
+    "pwa",
 ]
 
 MIDDLEWARE = [
@@ -137,6 +138,10 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "client",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -166,3 +171,78 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
+
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'client/js', 'serviceworker.js')
+
+# PWA Settings
+PWA_APP_NAME = 'Edulance'
+PWA_APP_DESCRIPTION = "A collaborative platform for education and learning"
+PWA_APP_THEME_COLOR = '#0d6efd'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/dashboard/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+
+PWA_APP_ICONS = [
+    {
+        'src': '/static/icons/icon-72x72.png',
+        'sizes': '72x72',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-96x96.png',
+        'sizes': '96x96',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-128x128.png',
+        'sizes': '128x128',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-144x144.png',
+        'sizes': '144x144',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-152x152.png',
+        'sizes': '152x152',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-192x192.png',
+        'sizes': '192x192',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-384x384.png',
+        'sizes': '384x384',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-512x512.png',
+        'sizes': '512x512',
+        'type': 'image/png'
+    }
+]
+
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/icons/icon-152x152.png',
+        'sizes': '152x152',
+        'type': 'image/png'
+    }
+]
+
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/icons/icon-512x512.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
