@@ -199,20 +199,20 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.role == "admin":
             return CustomUser.objects.all()
         return CustomUser.objects.filter(id=user.id)
-    
+
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
 
         if getattr(request.user, "role", None) != "admin":
-            obj = qs.first()   
+            obj = qs.first()
             if not obj:
-                return Response({}) 
+                return Response({})
 
             serializer = self.get_serializer(obj, many=False)
             return Response(serializer.data)
 
         return super().list(request, *args, **kwargs)
-    
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if request.user.role != "admin" and request.user.id != instance.id:
@@ -221,7 +221,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
         return super().update(request, *args, **kwargs)
-
 
     @action(detail=False, methods=["post"])
     def change_password(self, request):

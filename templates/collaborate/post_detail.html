@@ -171,7 +171,7 @@
 
         async function loadCurrentUser() {
             try {
-                const response = await authenticatedFetch('/api/users/me/');
+                const response = await authenticatedFetch('/api/users/');
                 if (response.ok) {
                     currentUser = await response.json();
                 }
