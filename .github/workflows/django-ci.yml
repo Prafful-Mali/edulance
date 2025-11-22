@@ -6,14 +6,29 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DB_ENGINE: ${{ secrets.DB_ENGINE }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: test_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
       FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       EMAIL_BACKEND: ${{ secrets.EMAIL_BACKEND }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
@@ -32,16 +47,6 @@ jobs:
 
       - name: Install dependencies with uv
         run: ~/.local/bin/uv sync
-
-      - name: Wait for DB
-        run: |
-          if [ -n "${{ env.DB_HOST }}" ] && [ "${{ env.DB_HOST }}" != "localhost" ]; then
-            echo "Waiting for DB at $DB_HOST:$DB_PORT"
-            for i in {1..30}; do
-              nc -z $DB_HOST $DB_PORT && { echo "DB reachable"; break; }
-              echo "DB not ready yet... ($i/30)"; sleep 2
-            done
-          fi
 
       - name: Run migrations
         run: ~/.local/bin/uv run python manage.py migrate --noinput
