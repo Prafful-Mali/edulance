@@ -68,8 +68,8 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'json'         
-          output: 'trivy-report.json'
+          format: 'table'         
+          output: 'trivy-report.txt'
           exit-code: '1'
           severity: 'HIGH,CRITICAL'
 
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
-          path: trivy-report.json
+          path: trivy-report.txt
 
 
   deploy:
