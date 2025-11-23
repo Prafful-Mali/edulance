@@ -74,6 +74,8 @@ async function authenticatedFetch(url, options) {
         } else {
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
+            localStorage.removeItem("user_id");
+
             window.location.href = "/login/";
         }
     }
@@ -98,6 +100,8 @@ document.getElementById("logoutBtn").addEventListener("click", async function (e
 
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user_id");
+
         window.location.href = "/login/";
     }
 });

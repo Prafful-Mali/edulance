@@ -200,18 +200,18 @@ class UserViewSet(viewsets.ModelViewSet):
             return CustomUser.objects.all()
         return CustomUser.objects.filter(id=user.id)
 
-    def list(self, request, *args, **kwargs):
-        qs = self.get_queryset()
+    # def list(self, request, *args, **kwargs):
+    #     qs = self.get_queryset()
 
-        if getattr(request.user, "role", None) != "admin":
-            obj = qs.first()
-            if not obj:
-                return Response({})
+    #     if getattr(request.user, "role", None) != "admin":
+    #         obj = qs.first()
+    #         if not obj:
+    #             return Response({})
 
-            serializer = self.get_serializer(obj, many=False)
-            return Response(serializer.data)
+    #         serializer = self.get_serializer(obj, many=False)
+    #         return Response(serializer.data)
 
-        return super().list(request, *args, **kwargs)
+    #     return super().list(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

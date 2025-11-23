@@ -171,7 +171,7 @@
 
         async function loadCurrentUser() {
             try {
-                const response = await authenticatedFetch('/api/users/');
+                const response = await authenticatedFetch(`/api/users/${localStorage.getItem('user_id')}`);
                 if (response.ok) {
                     currentUser = await response.json();
                 }

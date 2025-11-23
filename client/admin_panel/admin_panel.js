@@ -19,7 +19,6 @@ async function checkAdminRole() {
         const response = await authenticatedFetch(API.USERS.ME);
         if (response.ok) {
             const user = await response.json();
-
             if (user.role !== UserRole.ADMIN) {
                 alert('Access denied. Admin privileges required.');
                 window.location.href = '/dashboard/';

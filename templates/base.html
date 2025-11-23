@@ -71,27 +71,27 @@
 
   <script>
     async function setupNavigation() {
-      try {
-        const response = await authenticatedFetch('/api/users/');
-        if (response.ok) {
+    try {
+      const response = await authenticatedFetch(`/api/users/${localStorage.getItem('user_id')}`);
+      if (response.ok) {
           const user = await response.json();
-          
+          console.log(user)
           if (user.role === 'admin') {
-            document.getElementById('collaborateNav').classList.add('d-none');
-            document.getElementById('adminPanelNav').classList.remove('d-none');
+          document.getElementById('collaborateNav').classList.add('d-none');
+          document.getElementById('adminPanelNav').classList.remove('d-none');
           } else {
-            document.getElementById('collaborateNav').classList.remove('d-none');
-            document.getElementById('adminPanelNav').classList.add('d-none');
+          document.getElementById('collaborateNav').classList.remove('d-none');
+          document.getElementById('adminPanelNav').classList.add('d-none');
           }
-        }
+      }
       } catch (error) {
         console.error('Error loading user role:', error);
       }
-    }
+  }
 
-    if (isAuthenticated()) {
+  if (isAuthenticated()) {
       setupNavigation();
-    }
+  }
   </script>
 
   {% block extra_js %}{% endblock %}

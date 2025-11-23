@@ -1,6 +1,6 @@
 export const API = Object.freeze({
     USERS: {
-        ME: '/api/users/',
+        ME: `/api/users/${localStorage.getItem('user_id')}`,
         LIST: '/api/admin/users/',
         DELETE: (userId) => `/api/admin/users/${userId}/`
     },

@@ -19,7 +19,7 @@ function showAlert(message, type = 'success') {
 
 async function loadUserProfile() {
   try {
-    const response = await authenticatedFetch('/api/users/');
+    const response = await authenticatedFetch(`/api/users/${localStorage.getItem('user_id')}`);
 
     if (response.ok) {
       const data = await response.json();

@@ -73,6 +73,9 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             
+            const userId = parseJwt(data.access).user_id;
+            localStorage.setItem('user_id', userId);
+
             if (data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user));
             }
@@ -110,3 +113,16 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         submitBtn.textContent = 'Login';
     }
 });
+
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+
+  return JSON.parse(jsonPayload);
+}
