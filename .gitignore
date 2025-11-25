@@ -11,6 +11,3 @@ wheels/
 
 db.sqlite3
 .env
-
-
-.github/
