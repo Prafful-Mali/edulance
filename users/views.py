@@ -9,14 +9,16 @@ from .serializers import (
     UserRegistrationSerializer,
     UserProfileSerializer,
     PasswordChangeSerializer,
+    ForgotPasswordSerializer
 )
 from django.conf import settings
 from rest_framework.decorators import action
 from django.core.mail import send_mail
 from .models import CustomUser
-from .utils import generate_verification_token, verify_verification_token
+from .utils import generate_verification_token, verify_verification_token, generate_temporary_password
 from django.core.signing import SignatureExpired, BadSignature
-from .constants import EMAIL_VERIFICATION_SUBJECT, EMAIL_VERIFICATION_MESSAGE
+from .constants import EMAIL_VERIFICATION_SUBJECT, EMAIL_VERIFICATION_MESSAGE, FORGOT_PASSWORD_SUBJECT, FORGOT_PASSWORD_MESSAGE
+
 
 
 def login_view(request):
@@ -186,6 +188,50 @@ class LogoutAPIView(APIView):
                 {"error": "Invalid or expired token"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+
+class ForgotPasswordAPIView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            
+            try:
+                user = CustomUser.objects.get(email=email, is_email_verified=True, is_active=True)
+                
+                temp_password = generate_temporary_password()
+                
+                user.set_password(temp_password)
+                user.save()
+                
+                send_mail(
+                    subject=FORGOT_PASSWORD_SUBJECT,
+                    message=FORGOT_PASSWORD_MESSAGE.format(
+                        username=user.username,
+                        temporary_password=temp_password
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+                
+                return Response({
+                    "message": "A temporary password has been sent to your email."
+                }, status=status.HTTP_200_OK)
+                
+            except CustomUser.DoesNotExist:
+                return Response({
+                    "message": "If an account exists with this email, a temporary password has been sent."
+                }, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({
+                    "error": "Failed to send email. Please try again later."
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):

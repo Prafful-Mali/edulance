@@ -1,5 +1,7 @@
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 
+import secrets
+import string
 
 class EmailVerificationTokenGenerator:
     def __init__(self, salt="email-verification"):
@@ -34,3 +36,30 @@ def generate_verification_token(user):
 
 def verify_verification_token(token, max_age=86400):
     return email_token_generator.verify_token(token, max_age=max_age)
+
+
+
+
+def generate_temporary_password(length=8):
+    """
+    Generate a secure temporary password.
+    Contains uppercase, lowercase, digits, and special characters.
+    """
+    uppercase = string.ascii_uppercase
+    lowercase = string.ascii_lowercase
+    digits = string.digits
+    special = "!@#$%^&*"
+    
+    password = [
+        secrets.choice(uppercase),
+        secrets.choice(lowercase),
+        secrets.choice(digits),
+        secrets.choice(special)
+    ]
+    
+    all_characters = uppercase + lowercase + digits + special
+    password += [secrets.choice(all_characters) for _ in range(length)]
+    
+    secrets.SystemRandom().shuffle(password)
+    
+    return ''.join(password)

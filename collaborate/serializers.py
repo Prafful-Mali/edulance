@@ -5,7 +5,6 @@ from django.utils.text import slugify
 import uuid
 from django.utils import timezone
 
-
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill

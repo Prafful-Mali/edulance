@@ -106,3 +106,21 @@ class PasswordChangeSerializer(serializers.Serializer):
         if data["new_password"] != data["new_password_confirm"]:
             raise serializers.ValidationError("New passwords don't match")
         return data
+
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    
+    def validate_email(self, value):
+        try:
+            user = CustomUser.objects.get(email=value)
+            if not user.is_email_verified:
+                raise serializers.ValidationError(
+                    "Please verify your email first before resetting password"
+                )
+            if not user.is_active:
+                raise serializers.ValidationError("Account is disabled")
+        except CustomUser.DoesNotExist:
+            pass
+        return value

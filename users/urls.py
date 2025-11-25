@@ -10,6 +10,7 @@ from .views import (
     UserViewSet,
     LogoutAPIView,
     CustomTokenView,
+    ForgotPasswordAPIView
 )
 
 app_name = "users"
@@ -26,5 +27,6 @@ urlpatterns = [
     path("api/register/", RegisterAPIView.as_view(), name="api_register"),
     path("api/logout/", LogoutAPIView.as_view(), name="api_logout"),
     path("api/token/", CustomTokenView.as_view(), name="api_token"),
+    path("api/forget-password/", ForgotPasswordAPIView.as_view(), name="api_forget_password"),
     path("api/", include(router.urls)),
 ]
