@@ -120,7 +120,7 @@ class PostSerializer(serializers.ModelSerializer):
                 pass
 
         return post
-
+    
     def update(self, instance, validated_data):
         skill_ids = validated_data.pop("skill_ids", None)
 
